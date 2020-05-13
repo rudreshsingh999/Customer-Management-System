@@ -44,3 +44,8 @@ def deleteput(id):
             "password" : request.json["password"]
         }})
         return jsonify({"message":"updated"})
+
+@app.route('/getone/<id>', methods = ['GET'])
+def getone(id):
+    res = db.find_one({"_id": ObjectId(id)})
+    return {"_ID":str(ObjectId(res["_id"])), "name": res["name"], "email": res["email"], "password": res["password"]}

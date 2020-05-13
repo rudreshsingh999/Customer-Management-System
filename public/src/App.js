@@ -28,6 +28,59 @@ class App extends Component {
     }))
   }
 
+  namechange = event => {
+    this.setState({
+      name : event.target.value
+    })
+  }
+
+  emailchange = event => {
+    this.setState({
+      email : event.target.value
+    })
+  }
+
+  passwordchange = event => {
+    this.setState({
+      password : event.target.value
+    })
+  }
+
+  submit(event, id) {
+    event.preventDefault();
+    if(id === 0) {
+      axios.post('http://localhost:5000', {"name" : this.state.name, "email" : this.state.email, "password" : this.state.password})
+      .then(() => {
+        this.componentDidMount();
+      })
+    }
+    else {
+      axios.put(`http://localhost:5000/${id}`, {"name" : this.state.name, "email" : this.state.email, "password" : this.state.password})
+      .then(() => {
+        this.componentDidMount();
+      })
+    }
+  }
+
+  delete(id) {
+    axios.delete(`http://localhost:5000/${id}`)
+    .then(() => {
+      this.componentDidMount();
+    })
+  }
+
+  getone(id) {
+    axios.get(`http://localhost:5000/getone/${id}`)
+    .then((res)=>{
+      this.setState({
+        name: res.data.name,
+        email: res.data.email,
+        password: res.data.password,
+        id: res.data._ID
+      })
+    })
+  }
+
   render() {
     return (
       <div className="App">
@@ -35,15 +88,15 @@ class App extends Component {
         <div className="container mt-5">
           <div className="row mt-5">
             <div className="col lg-6 mt-5">
-              <form onSubmit={(e)=>{this.submit(e)}}>
+              <form onSubmit={(e)=>{this.submit(e, this.state.id)}}>
                 <div className="form-group">
-                  <input type="text" onChange={(e)=>{this.namechange(e)}} className="form-control" placeholder="Name" />
+                  <input type="text" onChange={(e)=>{this.namechange(e)}} className="form-control" value={this.state.name} placeholder="Name" />
                 </div>
                 <div className="form-group">
-                  <input type="text" onChange={(e)=>{this.emailchange(e)}} className="form-control" placeholder="Email" />
+                  <input type="text" onChange={(e)=>{this.emailchange(e)}} className="form-control" value={this.state.email} placeholder="Email" />
                 </div>
                 <div className="form-group">
-                  <input type="text" onChange={(e)=>{this.passwordchange(e)}} className="form-control" placeholder="Password" />
+                  <input type="text" onChange={(e)=>{this.passwordchange(e)}} className="form-control" value={this.state.password} placeholder="Password" />
                 </div>
                 <button className="btn btn-block btn-primary">Submit</button>
               </form>
@@ -66,12 +119,12 @@ class App extends Component {
                     <td>{user.email}</td>
                     <td>{user.password}</td>
                     <td>
-                      <button className="btn btn-sm btn-primary">
+                      <button onClick={(e)=>{this.getone(user._ID)}} className="btn btn-sm btn-primary">
                         <i className="fa fa-pencil"></i>
                       </button>
                     </td>
                     <td>
-                      <button className="btn btn-sm btn-danger">
+                      <button onClick={(e)=>{this.delete(user._ID)}} className="btn btn-sm btn-danger">
                       <i className="fa fa-trash"></i>
                       </button>
                     </td>
