@@ -24,6 +24,7 @@ def getpost():
                 })
         return jsonify(o)
     elif request.method == "POST":
+        print(request.json)
         id = db.insert({
             "name":request.json["name"], 
             "email":request.json["email"], 

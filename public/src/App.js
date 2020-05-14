@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import NavBar from './Components/NavBar';
+import FormElement from './Components/FormElement';
+
 
 
 class App extends Component {
 
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       users : [],
       name : "",
@@ -14,6 +16,8 @@ class App extends Component {
       password : "",
       id : 0
     }
+    this.handleChange = this.handleChange.bind(this);
+    this.submit = this.submit.bind(this);
   }
 
   componentDidMount() {
@@ -28,26 +32,18 @@ class App extends Component {
     }))
   }
 
-  namechange = event => {
+  handleChange(event) {
+    event.preventDefault();
+    const {name, value} = event.target;
     this.setState({
-      name : event.target.value
-    })
-  }
-
-  emailchange = event => {
-    this.setState({
-      email : event.target.value
-    })
-  }
-
-  passwordchange = event => {
-    this.setState({
-      password : event.target.value
+      [name] : value
     })
   }
 
   submit(event, id) {
     event.preventDefault();
+    console.log(event);
+    
     if(id === 0) {
       axios.post('http://localhost:5000', {"name" : this.state.name, "email" : this.state.email, "password" : this.state.password})
       .then(() => {
@@ -88,18 +84,14 @@ class App extends Component {
         <div className="container mt-5">
           <div className="row mt-5">
             <div className="col lg-6 mt-5">
-              <form onSubmit={(e)=>{this.submit(e, this.state.id)}}>
-                <div className="form-group">
-                  <input type="text" onChange={(e)=>{this.namechange(e)}} className="form-control" value={this.state.name} placeholder="Name" />
-                </div>
-                <div className="form-group">
-                  <input type="text" onChange={(e)=>{this.emailchange(e)}} className="form-control" value={this.state.email} placeholder="Email" />
-                </div>
-                <div className="form-group">
-                  <input type="text" onChange={(e)=>{this.passwordchange(e)}} className="form-control" value={this.state.password} placeholder="Password" />
-                </div>
-                <button className="btn btn-block btn-primary">Submit</button>
-              </form>
+              <FormElement
+                name={this.state.name}
+                email={this.state.email}
+                password={this.state.password}
+                id={this.state.id}
+                handleChange={this.handleChange}
+                submit={this.submit}
+              />
 
             </div>
             <div className="col lg-6 mt-5">
