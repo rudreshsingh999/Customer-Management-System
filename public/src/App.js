@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import NavBar from './Components/NavBar';
-import FormElement from './Components/FormElement';
-
+import NavBar from './components/NavBar';
+import FormElement from './components/FormElement';
+import TableElement from './components/TableElement'
 
 
 class App extends Component {
@@ -18,6 +18,8 @@ class App extends Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
+    this.delete = this.delete.bind(this);
+    this.getone = this.getone.bind(this);
   }
 
   componentDidMount() {
@@ -59,6 +61,7 @@ class App extends Component {
   }
 
   delete(id) {
+    console.log(id);
     axios.delete(`http://localhost:5000/${id}`)
     .then(() => {
       this.componentDidMount();
@@ -106,21 +109,11 @@ class App extends Component {
 
                 <tbody>
                   {this.state.users.map(user=>
-                    <tr>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.password}</td>
-                    <td>
-                      <button onClick={(e)=>{this.getone(user._ID)}} className="btn btn-sm btn-primary">
-                        <i className="fa fa-pencil"></i>
-                      </button>
-                    </td>
-                    <td>
-                      <button onClick={(e)=>{this.delete(user._ID)}} className="btn btn-sm btn-danger">
-                      <i className="fa fa-trash"></i>
-                      </button>
-                    </td>
-                    </tr>
+                    <TableElement
+                      user={user}
+                      delete={this.delete}
+                      getone={this.getone} 
+                    />
                   )}
                 </tbody>
               </table>
