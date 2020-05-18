@@ -31,7 +31,7 @@ def getpost():
             "password":request.json["password"]
             })
         return jsonify(str(ObjectId(id)))
-
+        
 
 @app.route('/<id>', methods=["DELETE", "PUT"])
 def deleteput(id):
