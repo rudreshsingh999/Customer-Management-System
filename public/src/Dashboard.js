@@ -124,8 +124,8 @@ class Dashboard extends Component {
     return (
       <div className="App">
         <NavBar />
-        <div className="container mt-5">
-          <div className="row mt-5">
+        <div className="container">
+          <div className="row">
             <div className="col-sm-4 lg-6 mt-5">
               <FormElement
                 name={this.state.name}

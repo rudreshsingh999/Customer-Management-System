@@ -4,22 +4,17 @@ class NavBar extends Component {
 
     render() {
         return (
-            <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-                <a className="navbar-brand" href="#">CMP</a>
-                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarCollapse">
-                <ul className="navbar-nav mr-auto">
-                    <li className="nav-item active">
-                    <a className="nav-link" href="#"><span class="sr-only">(current)</span></a>
-                    </li>
-                    <li className="nav-item">
-                    <a className="nav-link" href="#"></a>
-                    </li>
-                </ul>
-                </div>
-            </nav>
+        <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+            <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">Company name</a>
+            <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <ul class="navbar-nav px-3">
+                <li class="nav-item text-nowrap">
+                <a class="nav-link" href="/">Sign out</a>
+                </li>
+            </ul>
+        </nav>
         );
     }
 }

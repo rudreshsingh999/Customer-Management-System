@@ -34,14 +34,14 @@ class SignUp extends Component {
 
     render() {
         return (
-            <div className="container">
+            <div className="App">
                 <NavBar />
                 <div className="container mt-5">
-                    <div className="row mt-5">
-                        <div className="col mt-5"> 
+                    <div className="row">
+                        <div className="col"> 
                         </div>
-                        <div className="col mt-5">
-                        <h3 style={{textAlign: "center"}}>Login</h3>
+                        <div className="col">
+                        <h3 style={{textAlign: "center"}}>SignUp</h3>
                         <form onSubmit={this.handleSubmit}>
                             <div className="form-group">
                             <input type="text" onChange={this.handleChange} name="username" className="form-control"  value={this.state.username} placeholder="Username" />
@@ -58,7 +58,7 @@ class SignUp extends Component {
                             </p>
                         </form>
                         </div>
-                        <div className="col mt-5">
+                        <div className="col">
                         </div>
                     </div>
                 </div>
