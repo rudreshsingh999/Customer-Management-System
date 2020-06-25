@@ -2,14 +2,15 @@ import React, { Component } from 'react';
 import NavBar from './components/NavBar'
 import axios from 'axios'
 
-class Login extends Component {
+class App extends Component {
   constructor() {
     super();
     this.state = {
       username : '',
       password : '',
       loggedin : false,
-      placeholder : ''
+      placeholder : '',
+      select: ''
       }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,30 +26,52 @@ class Login extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    axios.post('http://localhost:5000/signin', {"username" : this.state.username, "password" : this.state.password})
-      .then((msg) => {
-        console.log(msg.data.message);
-        if(msg.data.message === 'success') {
-          this.props.history.push('/dashboard');
-          this.setState({loggedin : true});
-        }
-        else {
-          this.setState({placeholder : msg.data.message});
-        }
-    })
+    if(this.state.select === 'admin') {
+      axios.post('http://localhost:5000/signin_admin', {"username" : this.state.username, "password" : this.state.password})
+        .then((msg) => {
+          console.log(msg.data.message);
+          if(msg.data.message === 'success') {
+            this.props.history.push('/dashboard');
+            this.setState({loggedin : true});
+          }
+          else {
+            this.setState({placeholder : msg.data.message});
+          }
+      })
+    }
+    else {
+      axios.post('http://localhost:5000/signin_customer', {"username" : this.state.username, "password" : this.state.password})
+        .then((msg) => {
+          console.log(msg.data.message);
+          if(msg.data.message === 'success') {
+            this.props.history.push('/customerPanel');
+            this.setState({loggedin : true});
+          }
+          else {
+            this.setState({placeholder : msg.data.message});
+          }
+      })
+    }
   }
 
   render() {
     return (
-      <div className="App">
+      <div>
         <NavBar />
         <div className="container mt-5">
-          <div className="row">
-            <div className="col"> 
+          <div className="row mt-5">
+            <div className="col mt-5"> 
             </div>
-            <div className="col">
+            <div className="col mt-5">
               <h3 style={{textAlign: "center"}}>Login</h3>
               <form onSubmit={this.handleSubmit}>
+                <div className="form-group">
+                  <select value={this.state.select} onChange={this.handleChange} name="select" className="form-control" required>
+                    <option value="">Select an option</option>
+                    <option value="admin">Admin</option>
+                    <option value="customer">Customer</option>
+                  </select>
+                </div>
                 <div className="form-group">
                   <input type="text" onChange={this.handleChange} name="username" className="form-control"  value={this.state.username} placeholder="Username" />
                 </div>
@@ -64,7 +87,7 @@ class Login extends Component {
                 {!this.state.loggedin && this.state.placeholder}
               </div>
             </div>
-            <div className="col">
+            <div className="col mt-5">
             </div>
           </div>
         </div>
@@ -73,4 +96,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default App;
