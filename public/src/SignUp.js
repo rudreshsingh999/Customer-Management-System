@@ -3,7 +3,6 @@ import NavBar from './components/NavBar'
 import axios from 'axios'
 
 class SignUp extends Component {
-
     constructor() {
         super();
         this.state = {
@@ -25,22 +24,22 @@ class SignUp extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        axios.post('http://localhost:5000/signup', {"username" : this.state.username, "email" : this.state.email, "password" : this.state.password})
+        axios.post('http://localhost:5000/', {"username" : this.state.username, "email" : this.state.email, "password" : this.state.password})
         .then((msg) => {
             console.log(msg.data.message);
-            this.props.history.push('/signup');
+            this.props.history.push('/');
         });
     }
 
     render() {
         return (
-            <div className="App">
+            <div>
                 <NavBar />
                 <div className="container mt-5">
-                    <div className="row">
-                        <div className="col"> 
+                    <div className="row mt-5">
+                        <div className="col mt-5"> 
                         </div>
-                        <div className="col">
+                        <div className="col mt-5">
                         <h3 style={{textAlign: "center"}}>SignUp</h3>
                         <form onSubmit={this.handleSubmit}>
                             <div className="form-group">
@@ -58,7 +57,7 @@ class SignUp extends Component {
                             </p>
                         </form>
                         </div>
-                        <div className="col">
+                        <div className="col mt-5">
                         </div>
                     </div>
                 </div>
