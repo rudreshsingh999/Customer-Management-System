@@ -1,186 +1,153 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+  PagingState,
+  SearchState,
+  IntegratedFiltering,
+  IntegratedPaging,
+} from '@devexpress/dx-react-grid';
+import {
+  Grid,
+  Table,
+  TableHeaderRow,
+  TableEditColumn,
+  TableEditRow,  
+  PagingPanel,
+  ColumnChooser,
+  SearchPanel,
+  TableColumnVisibility,
+  Toolbar
+} from '@devexpress/dx-react-grid-bootstrap4';
+import { EditingState } from '@devexpress/dx-react-grid';
+import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
 import axios from 'axios';
 import NavBar from './components/NavBar';
-import FormElement from './components/FormElement';
-import TableElement from './components/TableElement'
+import SideBar from './components/SideBar'
 
+const TableComponent = ({ ...restProps }) => (
+    <Table.Table
+      { ...restProps }
+      className="table-striped"
+    />
+  );
+  
 
-class Dashboard extends Component {
+function Dashboard ()
+{
+    const [columns] = useState([
+        { name: 'name', title: 'Name' },
+        { name: 'vc', title: 'VC' },
+        { name: 'phone', title: 'Phone' },
+        { name: 'address', title: 'Address' },
+        ]);
+    const [rows, setRows] = useState([]);
+    const [defaultHiddenColumnNames] = useState(['phone', 'address']);
+    useEffect(() => {
+        const fetchData = async () => {
+            const result = await axios.get('http://localhost:5000/status');
+        setRows(result.data);
+        };
+        fetchData();
+        
+    }, []);
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      users : [],
-      tmp_users : [],
-      name : "",
-      email : "",
-      password : "",
-      id : 0,
-      sel : "Full List",
-      search : ""
-    }
-    this.handleChange = this.handleChange.bind(this);
-    this.submit = this.submit.bind(this);
-    this.delete = this.delete.bind(this);
-    this.getone = this.getone.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
-  }
+    const [editingColumnExtensions] = useState([
+        {
+            columnName: 'name',
+            createRowChange: (row, value) => ({...row,  name: value }),
+        },
+        {
+            columnName: 'vc',
+            createRowChange: (row, value) => ({...row,  vc: value }),
+        },
+        {
+            columnName: 'phone',
+            createRowChange: (row, value) => ({...row,  phone: value }),
+        },
+        {
+            columnName: 'address',
+            createRowChange: (row, value) => ({...row,  address: value }),
+        },
+    ]);
 
-  componentDidMount() {
-    axios.get('http://localhost:5000/')
-    .then((res)=>
-      this.setState({
-        users : res.data,
-        tmp_users : res.data,
-        name : "",
-        email : "",
-        password : "",
-        id : 0,
-        sel : "Full List",
-        search : ""
-    }))
-  }
-
-  handleChange(event) {
-    event.preventDefault();
-    const {name, value} = event.target;
-    this.setState({
-      [name] : value
-    })
-  }
-
-  handleSearch(event) {
-    event.preventDefault();
-    console.log(this.state.sel);
-    console.log(this.state.users);
-    this.setState({
-      users : this.state.tmp_users
-    })
-    var search_users = [];
-    if(this.state.search === '' || this.state.sel === "") {
-      search_users = this.state.tmp_users;
-      this.setState({
-        search : ''
-      })
-    }
-    else {
-      for(var i = 0; i < this.state.users.length; i++) {
-        if(this.state.sel === 'name' && this.state.users[i].name === this.state.search) {
-          search_users.push(this.state.users[i]);
+    const commitChanges = ({ added, changed, deleted }) => {
+        let changedRows;
+        if (added) {
+            console.log(added[0])
+            axios.post('http://localhost:5000/status', {"name": added[0].name, "vc": added[0].vc, "phone": added[0].phone, "address": added[0].address});
+            changedRows = [
+                ...rows,
+                ...added.map((row) => ({
+                ...row
+                })),
+            ];
         }
-        if(this.state.sel === 'email' && this.state.users[i].email === this.state.search) {
-          search_users.push(this.state.users[i]);
+        if (changed) {
+            
+            var i;
+            let objIndex;
+            for (i = 0; i < rows.length; i++) {
+                if(changed[i] !== undefined) {
+                    objIndex = i;
+                    break;
+                }
+            }
+            axios.put(`http://localhost:5000/status/${changed[objIndex]._ID}`, changed[objIndex]);
+            rows[objIndex] = changed[objIndex];
+            changedRows = [...rows];
         }
-        if(this.state.sel === 'password' && this.state.users[i].password === this.state.search) {
-          search_users.push(this.state.users[i]);
+        if (deleted) {
+            console.log(rows[deleted]._ID);
+            axios.delete(`http://localhost:5000/${rows[deleted]._ID}`);
+            changedRows = rows.filter(row => row._ID !== rows[deleted]._ID);
         }
-      }
-    }
-    this.setState({
-      users : search_users
-    })
-    console.log(search_users);
-  }
+        setRows(changedRows);
+    };
 
-  submit(event, id) {
-    event.preventDefault();
-    console.log(event);
-    
-    if(id === 0) {
-      axios.post('http://localhost:5000', {"name" : this.state.name, "email" : this.state.email, "password" : this.state.password})
-      .then(() => {
-        this.componentDidMount();
-      })
-    }
-    else {
-      axios.put(`http://localhost:5000/${id}`, {"name" : this.state.name, "email" : this.state.email, "password" : this.state.password})
-      .then(() => {
-        this.componentDidMount();
-      })
-    }
-  }
-
-  delete(id) {
-    console.log(id);
-    axios.delete(`http://localhost:5000/${id}`)
-    .then(() => {
-      this.componentDidMount();
-    })
-  }
-
-  getone(id) {
-    axios.get(`http://localhost:5000/getone/${id}`)
-    .then((res)=>{
-      this.setState({
-        name: res.data.name,
-        email: res.data.email,
-        password: res.data.password,
-        id: res.data._ID
-      })
-    })
-  }
-
-  render() {
     return (
-      <div className="App">
-        <NavBar />
-        <div className="container">
-          <div className="row">
-            <div className="col-sm-4 lg-6 mt-5">
-              <FormElement
-                name={this.state.name}
-                email={this.state.email}
-                password={this.state.password}
-                id={this.state.id}
-                handleChange={this.handleChange}
-                submit={this.submit}
-              />
+        <div>
+            <NavBar />
+            <div class="container-fluid">
+                <div class="row">
+                    <SideBar />
+                    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                        <div className="container">
+                            <div>
+                            <Grid
+                                rows={rows}
+                                columns={columns}
+                            >
 
-            </div>
-            <div className="col-sm-8 lg-6 mt-5">
+                            <PagingState
+                                defaultCurrentPage={0}
+                                pageSize={10}
+                            />
 
-              <div className="row">
-                <div className="col-sm-5">
-                  <select value={this.state.sel} onChange={this.handleChange} name="sel" className="custom-select d-block w-50" required>
-                    <option value="">Full List</option>
-                    <option value="name">Name</option>
-                    <option value="email">Email</option>
-                    <option value="password">Password</option>
-                  </select>
+                            <EditingState
+                                columnExtensions={editingColumnExtensions}
+                                onCommitChanges={commitChanges}
+                            />
+                            <SearchState defaultValue="" />
+                            <IntegratedFiltering />
+                            <IntegratedPaging />
+                            <Table tableComponent={TableComponent}/>
+                            <TableHeaderRow />
+                            <TableEditRow />
+                            <TableEditColumn showAddCommand showEditCommand showDeleteCommand/>
+                            <TableColumnVisibility
+                            defaultHiddenColumnNames={defaultHiddenColumnNames}
+                            />
+                            <Toolbar />
+                            <SearchPanel />
+                            <ColumnChooser />
+                            <PagingPanel />
+                            </Grid>
+                            </div>
+                        </div>
+                    </main>
                 </div>
-                <div className="col-sm-7">
-                  <form className="form-inline mt-2 mt-md-0">
-                    <input className="form-control mr-sm-1" value={this.state.search} name="search" onChange={this.handleChange} type="text" placeholder="Search" aria-label="Search" />
-                    <button onClick={this.handleSearch} className="btn btn-outline-primary">Search</button>
-                  </form>
-                </div>
-              </div>
-
-              <table className="table mt-2">
-                <thead>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Password</th>
-                  <th>Edit</th>
-                  <th>Delete</th>
-                </thead>
-
-                <tbody>
-                  {this.state.users.map(user=>
-                    <TableElement
-                      user={user}
-                      delete={this.delete}
-                      getone={this.getone} 
-                    />
-                  )}
-                </tbody>
-              </table>
             </div>
-          </div>
         </div>
-      </div>
     );
-  }
-}
+};
 
 export default Dashboard;
